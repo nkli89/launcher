@@ -1,0 +1,23 @@
+{
+  "manifestVersion": 1,
+  "items": [
+    {
+      "id": "docs",
+      "title": "Docs",
+      "iconPath": "Assets/icons/web.svg",
+      "platform": "any",
+      "actions": {
+        "openUrl": { "url": "https://example.com" }
+      }
+    },
+    {
+      "id": "support",
+      "title": "Support",
+      "iconPath": "Assets/icons/web.svg",
+      "platform": "any",
+      "actions": {
+        "openUrl": { "url": "https://support.example.com" }
+      }
+    }
+  ]
+}

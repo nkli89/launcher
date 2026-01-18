@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Google icon">
+  <rect x="6" y="6" width="52" height="52" rx="10" fill="#FFFFFF"/>
+  <circle cx="32" cy="32" r="16" fill="none" stroke="#4285F4" stroke-width="5"/>
+  <path d="M32 16a16 16 0 0 1 13.5 7" stroke="#EA4335" stroke-width="5" fill="none"/>
+  <path d="M45.5 23a16 16 0 0 1 0 18" stroke="#FBBC05" stroke-width="5" fill="none"/>
+  <path d="M45.5 41A16 16 0 0 1 32 48" stroke="#34A853" stroke-width="5" fill="none"/>
+  <rect x="34" y="30" width="14" height="4" rx="2" fill="#4285F4"/>
+</svg>

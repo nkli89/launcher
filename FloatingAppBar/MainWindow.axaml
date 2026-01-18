@@ -1,0 +1,175 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
+        xmlns:vm="clr-namespace:FloatingAppBar.ViewModels"
+        mc:Ignorable="d"
+        x:Class="FloatingAppBar.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Taskbar"
+        SystemDecorations="None"
+        Topmost="True"
+        CanResize="False"
+        Background="Transparent"
+        Width="1100"
+        Height="100">
+    <Grid VerticalAlignment="Bottom" Margin="0,0,0,8">
+        <Border CornerRadius="25" Background="#CC1A1A1A" BorderBrush="#33FFFFFF" BorderThickness="1.5"
+                BoxShadow="0 5 15 #80000000" PointerPressed="OnPointerPressed"
+                IsVisible="{Binding IsNotMinimized}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="6,4">
+                <Border Background="#22FFFFFF" CornerRadius="15" Padding="10,5" Margin="5">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="■" Background="Transparent" BorderThickness="0" Foreground="White" Margin="5"
+                                Command="{Binding ShowSquareCommand}"/>
+                        <Button Content="⠿" Background="Transparent" BorderThickness="0" Foreground="White" Margin="5"
+                                Command="{Binding ShowDefaultCommand}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#22FFFFFF" CornerRadius="15" Padding="12,8" Margin="5">
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding InfoPanel.TimeOnlyText}" Foreground="White" FontSize="14" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding InfoPanel.DateText}" Foreground="#FFAAAAAA" FontSize="10"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="12,0,0,0" VerticalAlignment="Center" Spacing="6">
+                            <Button Width="34" Height="34" Background="#22111111" BorderBrush="{x:Null}" CornerRadius="10"
+                                    ToolTip.Tip="{Binding InfoPanel.BatteryText}">
+                                <Button.Flyout>
+                                    <Flyout Placement="Bottom">
+                                        <Border Background="#EE2A2A2A" Padding="10" CornerRadius="8" MinWidth="200">
+                                            <StackPanel Spacing="6">
+                                                <TextBlock Text="מצב סוללה" Foreground="White" FontSize="12" FontWeight="SemiBold"/>
+                                                <TextBlock Text="{Binding InfoPanel.BatteryText}" Foreground="#DDFFFFFF"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Flyout>
+                                </Button.Flyout>
+                                <Image Width="22" Height="22">
+                                    <Image.Source>
+                                        <svg:SvgImage Source="avares://FloatingAppBar/Assets/icons/battery_color.svg" />
+                                    </Image.Source>
+                                </Image>
+                            </Button>
+                            <Button Width="34" Height="34" Background="#22111111" BorderBrush="{x:Null}" CornerRadius="10"
+                                    ToolTip.Tip="{Binding InfoPanel.NetworkText}">
+                                <Button.Flyout>
+                                    <Flyout Placement="Bottom">
+                                        <Border Background="#EE2A2A2A" Padding="10" CornerRadius="8" MinWidth="240">
+                                            <StackPanel Spacing="6">
+                                                <TextBlock Text="מצב חיבור" Foreground="White" FontSize="12" FontWeight="SemiBold"/>
+                                                <TextBlock Text="{Binding InfoPanel.NetworkText}" Foreground="#DDFFFFFF"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Flyout>
+                                </Button.Flyout>
+                                <Image Width="22" Height="22">
+                                    <Image.Source>
+                                        <svg:SvgImage Source="avares://FloatingAppBar/Assets/icons/network_color.svg" />
+                                    </Image.Source>
+                                </Image>
+                            </Button>
+                            <Button Width="34" Height="34" Background="#22111111" BorderBrush="{x:Null}" CornerRadius="10"
+                                    ToolTip.Tip="התראות">
+                                <Button.Flyout>
+                                    <Flyout Placement="Bottom">
+                                        <Border Background="#EE2A2A2A" Padding="10" CornerRadius="8" MinWidth="220">
+                                            <StackPanel Spacing="6">
+                                                <TextBlock Text="התראות" Foreground="White" FontSize="12" FontWeight="SemiBold"/>
+                                                <TextBlock Text="אין התראות חדשות" Foreground="#DDFFFFFF"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Flyout>
+                                </Button.Flyout>
+                                <Image Width="22" Height="22">
+                                    <Image.Source>
+                                        <svg:SvgImage Source="avares://FloatingAppBar/Assets/icons/bell_color.svg" />
+                                    </Image.Source>
+                                </Image>
+                            </Button>
+                            <Button Width="34" Height="34" Background="#22111111" BorderBrush="{x:Null}" CornerRadius="10"
+                                    ToolTip.Tip="הגדרות">
+                                <Image Width="22" Height="22">
+                                    <Image.Source>
+                                        <svg:SvgImage Source="avares://FloatingAppBar/Assets/icons/settings_color.svg" />
+                                    </Image.Source>
+                                </Image>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#11FFFFFF" CornerRadius="18" Padding="10,5" Margin="5"
+                        IsVisible="{Binding IsDefaultView}">
+                    <ItemsControl ItemsSource="{Binding Items}"
+                                  DragDrop.AllowDrop="True"
+                                  DragDrop.Drop="OnItemsAreaDrop">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:AppItemViewModel">
+                                <Border Width="45" Height="45" Margin="4" Background="#22FFFFFF" CornerRadius="10"
+                                        PointerPressed="OnItemPointerPressed"
+                                        PointerMoved="OnItemPointerMoved">
+                                    <Button Command="{Binding ActivateCommand}"
+                                            ToolTip.Tip="{Binding Title}"
+                                            Background="Transparent"
+                                            BorderBrush="{x:Null}">
+                                        <Image Source="{Binding Icon}" Width="26" Height="26" />
+                                    </Button>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+
+                <Border Background="#11FFFFFF" CornerRadius="18" Padding="10,5" Margin="5" IsVisible="{Binding IsSquareView}">
+                    <UniformGrid Columns="3" Rows="3" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Border Width="36" Height="36" Background="#FFC107" CornerRadius="10" Margin="4"/>
+                        <Border Width="36" Height="36" Background="#03A9F4" CornerRadius="10" Margin="4"/>
+                        <Border Width="36" Height="36" Background="#E91E63" CornerRadius="10" Margin="4"/>
+                        <Border Width="36" Height="36" Background="#4CAF50" CornerRadius="10" Margin="4"/>
+                        <Border Width="36" Height="36" Background="#F97316" CornerRadius="10" Margin="4"/>
+                        <Border Width="36" Height="36" Background="#22C55E" CornerRadius="10" Margin="4"/>
+                        <Border Width="36" Height="36" Background="#8B5CF6" CornerRadius="10" Margin="4"/>
+                        <Border Width="36" Height="36" Background="#EF4444" CornerRadius="10" Margin="4"/>
+                        <Border Width="36" Height="36" Background="#64748B" CornerRadius="10" Margin="4"/>
+                    </UniformGrid>
+                </Border>
+
+                <Border Background="#33FFFFFF" CornerRadius="15" Width="60" Height="60" Margin="5" ClipToBounds="True">
+                    <Grid>
+                        <Image Source="avares://FloatingAppBar/hir.png" Stretch="UniformToFill" />
+                        <TextBlock Text="מערכות" Foreground="White" FontSize="8" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                    </Grid>
+                </Border>
+
+                <Button Content="אפליקציות" Margin="8,0,0,0"
+                        Background="Transparent" BorderBrush="{x:Null}"
+                        Foreground="White" Click="OnAllAppsClick"/>
+                <Button Content="מזער" Margin="8,0,0,0"
+                        Background="Transparent" BorderBrush="{x:Null}"
+                        Foreground="White" Command="{Binding MinimizeCommand}"/>
+                <Button Content="X" Width="28" Height="28" Margin="8,0,0,0"
+                        Background="Transparent" BorderBrush="{x:Null}"
+                        Foreground="White" Click="OnCloseClick"/>
+            </StackPanel>
+        </Border>
+
+        <Border Background="#33FFFFFF" CornerRadius="12" Width="52" Height="52"
+                HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                Margin="12,0,0,12"
+                ClipToBounds="True"
+                IsVisible="{Binding IsMinimized}"
+                PointerPressed="OnCompactPointerPressed">
+            <Grid>
+                <Image Source="avares://FloatingAppBar/hir.png" Stretch="UniformToFill" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

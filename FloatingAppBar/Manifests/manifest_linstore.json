@@ -1,0 +1,14 @@
+{
+  "manifestVersion": 1,
+  "items": [
+    {
+      "id": "linstore",
+      "title": "linux store",
+      "iconPath": "icon/linstore.png",
+      "platform": "windows",
+      "actions": {
+        "openUrl": { "url": "https://google.co.il" }
+      }
+    }
+  ]
+}

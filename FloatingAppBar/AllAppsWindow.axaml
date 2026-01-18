@@ -1,0 +1,50 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:FloatingAppBar.ViewModels"
+        mc:Ignorable="d"
+        x:Class="FloatingAppBar.AllAppsWindow"
+        x:DataType="vm:AllAppsViewModel"
+        Title="כל האפליקציות"
+        Width="420"
+        Height="520"
+        Background="#1E1E1E"
+        WindowStartupLocation="CenterOwner">
+    <Border Padding="12">
+        <StackPanel Spacing="10">
+            <TextBlock Text="כל האפליקציות" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Items}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:AppItemViewModel">
+                            <Border Background="#2A2A2A" CornerRadius="8" Padding="8" Margin="0,0,0,6">
+                                <DockPanel>
+                                    <Image DockPanel.Dock="Left" Source="{Binding Icon}" Width="28" Height="28" Margin="0,0,8,0"/>
+                                    <TextBlock Text="{Binding Title}" Foreground="White" VerticalAlignment="Center"/>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6">
+                                        <Button Content="מחיקה"
+                                                Background="#4A1A1A"
+                                                BorderBrush="{x:Null}"
+                                                Foreground="White"
+                                                Padding="6,2"
+                                                CornerRadius="6"
+                                                Click="OnDeleteClick"/>
+                                        <Button
+                                            Content="{Binding PinMenuTitle}"
+                                            Command="{Binding TogglePinnedCommand}"
+                                            Background="#3A3A3A"
+                                            BorderBrush="{x:Null}"
+                                            Foreground="White"
+                                            Padding="6,2"
+                                            CornerRadius="6"/>
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </StackPanel>
+    </Border>
+</Window>

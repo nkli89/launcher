@@ -1,0 +1,14 @@
+{
+  "manifestVersion": 1,
+  "items": [
+    {
+      "id": "EXCEL",
+      "title": "EXCEL App",
+      "iconPath": "icon/excel.svg",
+      "platform": "windows",
+      "actions": {
+        "run": { "command": "C:/Program Files/Microsoft Office/root/Office16/EXCEL.EXE" }
+      }
+    }
+  ]
+}

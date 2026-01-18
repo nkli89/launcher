@@ -1,0 +1,14 @@
+{
+  "actions": [
+    {
+      "id": "open-folder",
+      "title": "Open Sample Folder",
+      "run": { "command": "explorer.exe", "args": "." }
+    },
+    {
+      "id": "open-docs",
+      "title": "Open Docs URL",
+      "openUrl": { "url": "https://example.com" }
+    }
+  ]
+}

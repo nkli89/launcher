@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:FloatingAppBar"
+        x:Class="FloatingAppBar.ConfirmDialog"
+        x:DataType="vm:ConfirmDialogViewModel"
+        Title="אישור"
+        Width="320"
+        Height="160"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="#1E1E1E">
+    <Border Padding="12">
+        <StackPanel Spacing="12">
+            <TextBlock Text="{Binding TitleText}" Foreground="White" FontSize="14" FontWeight="SemiBold"/>
+            <TextBlock Text="{Binding MessageText}" Foreground="#DDFFFFFF" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <Button Content="ביטול" Click="OnCancelClick" Background="#3A3A3A" BorderBrush="{x:Null}" Foreground="White" Padding="8,3"/>
+                <Button Content="כן" Click="OnConfirmClick" Background="#4A1A1A" BorderBrush="{x:Null}" Foreground="White" Padding="8,3"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

@@ -1,0 +1,14 @@
+{
+  "manifestVersion": 1,
+  "items": [
+    {
+      "id": "google",
+      "title": "google",
+      "iconPath": "icon/google.png",
+      "platform": "windows",
+      "actions": {
+        "openUrl": { "url": "https://google.co.il" }
+      }
+    }
+  ]
+}

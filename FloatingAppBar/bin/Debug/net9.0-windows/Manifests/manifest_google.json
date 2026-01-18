@@ -1,0 +1,17 @@
+{
+  "manifestVersion": 1,
+  "items": [
+    {
+      "id": "google",
+      "title": "google",
+      "iconPath": "icon/google.svg",
+      "platform": "windows",
+      "actions": {
+        "run": { "command": "msedge.exe" },
+        "menu": [
+          { "id": "edge-docs", "title": "Open Edge Docs", "openUrl": { "url": "https://google.co.il" } }
+        ]
+      }
+    }
+  ]
+}
