@@ -65,11 +65,7 @@
                                         </Border>
                                     </Flyout>
                                 </Button.Flyout>
-                                <Image Width="22" Height="22">
-                                    <Image.Source>
-                                        <svg:SvgImage Source="avares://FloatingAppBar/Assets/icons/network_color.svg" />
-                                    </Image.Source>
-                                </Image>
+                                <Image Width="22" Height="22" Source="{Binding InfoPanel.NetworkIcon}" />
                             </Button>
                             <Button Width="34" Height="34" Background="#22111111" BorderBrush="{x:Null}" CornerRadius="10"
                                     ToolTip.Tip="התראות">
@@ -115,11 +111,13 @@
                             <DataTemplate x:DataType="vm:AppItemViewModel">
                                 <Border Width="45" Height="45" Margin="4" Background="#22FFFFFF" CornerRadius="10"
                                         PointerPressed="OnItemPointerPressed"
-                                        PointerMoved="OnItemPointerMoved">
+                                        PointerMoved="OnItemPointerMoved"
+                                        Opacity="{Binding ItemOpacity}">
                                     <Button Command="{Binding ActivateCommand}"
                                             ToolTip.Tip="{Binding Title}"
                                             Background="Transparent"
-                                            BorderBrush="{x:Null}">
+                                            BorderBrush="{x:Null}"
+                                            IsEnabled="{Binding IsNotRunning}">
                                         <Image Source="{Binding Icon}" Width="26" Height="26" />
                                     </Button>
                                 </Border>

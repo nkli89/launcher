@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Avalonia.Threading;
 using FloatingAppBar.Models;
 using FloatingAppBar.Services;
 
@@ -13,11 +15,12 @@ public sealed class MainWindowViewModel : ViewModelBase
 {
     public ObservableCollection<AppItemViewModel> Items { get; } = new();
     public ObservableCollection<AppItemViewModel> AllItems { get; } = new();
-    public InfoPanelViewModel InfoPanel { get; } = new();
+    public InfoPanelViewModel InfoPanel { get; }
     public Avalonia.CornerRadius BarCornerRadius { get; }
     private bool _isSquareView;
     private bool _isMinimized;
     private readonly Dictionary<string, List<AppItemViewModel>> _manifestItems = new();
+    private readonly DispatcherTimer _runningCheckTimer;
 
     public bool IsSquareView
     {
@@ -61,6 +64,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         var actionManifestLoader = new ActionManifestLoader();
         var settingsLoader = new SettingsLoader();
         var settings = settingsLoader.Load(Path.Combine(AppContext.BaseDirectory, "settings.json"));
+        var networkAdapter = ResolveNetworkAdapter(settings);
+        InfoPanel = new InfoPanelViewModel(networkAdapter);
         BarCornerRadius = settings.BarShape.Equals("square", StringComparison.OrdinalIgnoreCase)
             ? new Avalonia.CornerRadius(0)
             : new Avalonia.CornerRadius(settings.CornerRadius);
@@ -79,7 +84,11 @@ public sealed class MainWindowViewModel : ViewModelBase
                 }
 
                 var icon = IconLoader.Load(item.IconPath);
-                var command = new RelayCommand(() => actionRunner.Execute(item, manifestBaseDirectory));
+                var command = new RelayCommand(() =>
+                {
+                    actionRunner.Execute(item, manifestBaseDirectory);
+                    UpdateRunningStates();
+                });
                 var menuActions = BuildMenuActions(item, manifestBaseDirectory, actionRunner, actionManifestLoader);
                 var appItem = new AppItemViewModel(
                     item.Title,
@@ -88,7 +97,9 @@ public sealed class MainWindowViewModel : ViewModelBase
                     menuActions,
                     item.ShowInBar,
                     entry.Path,
-                    DeleteItem);
+                    DeleteItem,
+                    item.Actions.Run,
+                    item.Actions.OpenUrl);
                 appItem.PropertyChanged += OnItemPropertyChanged;
                 AllItems.Add(appItem);
                 if (!_manifestItems.TryGetValue(entry.Path, out var list))
@@ -102,6 +113,14 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
 
         RefreshVisibleItems();
+
+        _runningCheckTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(2)
+        };
+        _runningCheckTimer.Tick += (_, _) => UpdateRunningStates();
+        _runningCheckTimer.Start();
+        UpdateRunningStates();
     }
 
     private void OnItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -119,6 +138,134 @@ public sealed class MainWindowViewModel : ViewModelBase
         {
             Items.Add(item);
         }
+    }
+
+    private void UpdateRunningStates()
+    {
+        foreach (var item in AllItems)
+        {
+            item.IsRunning = IsItemRunning(item);
+        }
+    }
+
+    private static bool IsItemRunning(AppItemViewModel item)
+    {
+        if (item.RunAction is { } runAction && !string.IsNullOrWhiteSpace(runAction.Command))
+        {
+            return IsProcessRunning(runAction.Command);
+        }
+
+        if (item.OpenUrlAction is { } openUrlAction && !string.IsNullOrWhiteSpace(openUrlAction.Url))
+        {
+            return IsUrlOpen(openUrlAction.Url, item.Title);
+        }
+
+        return false;
+    }
+
+    private static bool IsProcessRunning(string command)
+    {
+        try
+        {
+            var fileName = Path.GetFileNameWithoutExtension(command.Trim());
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return false;
+            }
+
+            return Process.GetProcessesByName(fileName).Length > 0;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool IsUrlOpen(string url, string? titleHint)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            return false;
+        }
+
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+        {
+            var candidate = $"https://{url.Trim()}";
+            if (!Uri.TryCreate(candidate, UriKind.Absolute, out uri))
+            {
+                return false;
+            }
+        }
+
+        var host = uri.Host;
+        if (string.IsNullOrWhiteSpace(host))
+        {
+            return false;
+        }
+
+        var candidates = BuildUrlTitleCandidates(host, url, titleHint);
+        if (candidates.Length == 0)
+        {
+            return false;
+        }
+
+        try
+        {
+            foreach (var process in Process.GetProcesses())
+            {
+                var title = process.MainWindowTitle;
+                if (string.IsNullOrWhiteSpace(title))
+                {
+                    continue;
+                }
+
+                foreach (var candidate in candidates)
+                {
+                    if (title.Contains(candidate, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        catch
+        {
+            return false;
+        }
+
+        return false;
+    }
+
+    private static string[] BuildUrlTitleCandidates(string host, string url, string? titleHint)
+    {
+        var trimmedHost = host.StartsWith("www.", StringComparison.OrdinalIgnoreCase)
+            ? host[4..]
+            : host;
+
+        var urlWithoutScheme = url;
+        if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+        {
+            urlWithoutScheme = url[7..];
+        }
+        else if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            urlWithoutScheme = url[8..];
+        }
+
+        var candidates = new List<string>
+        {
+            host,
+            trimmedHost,
+            $"www.{trimmedHost}",
+            urlWithoutScheme,
+            titleHint ?? string.Empty
+        };
+
+        return candidates
+            .Where(candidate => !string.IsNullOrWhiteSpace(candidate))
+            .Select(candidate => candidate.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
     }
 
     public void DeleteItem(AppItemViewModel item)
@@ -256,6 +403,26 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
 
         return Path.Combine(directory, $"{fileName}.actions.json");
+    }
+
+    private static string? ResolveNetworkAdapter(AppSettings settings)
+    {
+        if (!string.IsNullOrWhiteSpace(settings.NetworkAdapter))
+        {
+            return settings.NetworkAdapter;
+        }
+
+        if (!string.IsNullOrWhiteSpace(settings.NetworkAdapterWifi))
+        {
+            return settings.NetworkAdapterWifi;
+        }
+
+        if (!string.IsNullOrWhiteSpace(settings.NetworkAdapterLan))
+        {
+            return settings.NetworkAdapterLan;
+        }
+
+        return null;
     }
 
     private static string ResolvePath(string path, string baseDirectory)

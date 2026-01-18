@@ -2,12 +2,14 @@ using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Avalonia.Media;
+using FloatingAppBar.Models;
 
 namespace FloatingAppBar.ViewModels;
 
 public sealed class AppItemViewModel : ViewModelBase
 {
     private bool _isPinned;
+    private bool _isRunning;
     private readonly ActionMenuItemViewModel _pinMenuItem;
     private readonly Action<AppItemViewModel>? _deleteAction;
 
@@ -18,7 +20,9 @@ public sealed class AppItemViewModel : ViewModelBase
         ObservableCollection<ActionMenuItemViewModel> menuActions,
         bool isPinned,
         string? manifestPath,
-        Action<AppItemViewModel>? deleteAction)
+        Action<AppItemViewModel>? deleteAction,
+        RunAction? runAction,
+        OpenUrlAction? openUrlAction)
     {
         Title = title;
         Icon = icon;
@@ -26,6 +30,8 @@ public sealed class AppItemViewModel : ViewModelBase
         MenuActions = menuActions;
         _isPinned = isPinned;
         ManifestPath = manifestPath;
+        RunAction = runAction;
+        OpenUrlAction = openUrlAction;
         _deleteAction = deleteAction;
         TogglePinnedCommand = new RelayCommand(TogglePinned);
         DeleteCommand = new RelayCommand(Delete);
@@ -44,6 +50,8 @@ public sealed class AppItemViewModel : ViewModelBase
     public ICommand TogglePinnedCommand { get; }
     public ICommand DeleteCommand { get; }
     public string? ManifestPath { get; }
+    public RunAction? RunAction { get; }
+    public OpenUrlAction? OpenUrlAction { get; }
 
     public bool IsPinned
     {
@@ -59,6 +67,23 @@ public sealed class AppItemViewModel : ViewModelBase
     }
 
     public string PinMenuTitle => IsPinned ? "הסר מהסרגל" : "הצג בסרגל";
+
+    public bool IsRunning
+    {
+        get => _isRunning;
+        set
+        {
+            if (SetProperty(ref _isRunning, value))
+            {
+                NotifyPropertyChanged(nameof(IsNotRunning));
+                NotifyPropertyChanged(nameof(ItemOpacity));
+            }
+        }
+    }
+
+    public bool IsNotRunning => !IsRunning;
+
+    public double ItemOpacity => IsRunning ? 0.4 : 1.0;
 
     private void TogglePinned()
     {
