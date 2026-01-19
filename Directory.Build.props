@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(LocalAppData)\FloatingAppBar\obj\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(LocalAppData)\FloatingAppBar\bin\</BaseOutputPath>
+  </PropertyGroup>
+</Project>

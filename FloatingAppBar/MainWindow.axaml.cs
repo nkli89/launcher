@@ -52,6 +52,7 @@ public partial class MainWindow : Window
             _lastPointerEvent = null;
             _dragStartPoint = e.GetPosition(this);
             e.Pointer.Capture(control);
+            SetPressedState(control, true);
             StartDragDelayTimer();
             e.Handled = true;
         }
@@ -98,11 +99,19 @@ public partial class MainWindow : Window
         {
             if (_dragItem is not null)
             {
-                OpenAppItem(_dragItem, sender as Control);
+                if (sender is Control control)
+                {
+                    SetPressedState(control, false);
+                    OpenAppItem(_dragItem, control);
+                }
             }
             _dragItem = null;
             _dragReady = false;
             _lastPointerEvent = null;
+        }
+        else if (sender is Control draggedControl)
+        {
+            SetPressedState(draggedControl, false);
         }
     }
 
@@ -331,6 +340,18 @@ public partial class MainWindow : Window
         {
             viewModel.RestoreCommand.Execute(null);
             e.Handled = true;
+        }
+    }
+
+    private static void SetPressedState(Control control, bool isPressed)
+    {
+        if (isPressed)
+        {
+            control.Classes.Add("pressed");
+        }
+        else
+        {
+            control.Classes.Remove("pressed");
         }
     }
 

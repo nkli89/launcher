@@ -61,7 +61,13 @@ public partial class LayoutChoiceDialog : Window
         var screenPoint = _anchor.PointToScreen(new Point(0, _anchor.Bounds.Height));
         var desiredX = screenPoint.X;
         var desiredY = screenPoint.Y + 6;
-        var screen = (_owner ?? this).Screens.ScreenFromPoint(screenPoint) ?? (_owner ?? this).Screens.Primary;
+        var screens = (_owner ?? this).Screens;
+        var screen = screens.ScreenFromPoint(screenPoint) ?? screens.Primary;
+        if (screen is null)
+        {
+            return;
+        }
+
         var working = screen.WorkingArea;
         var width = (int)Math.Max(1, Bounds.Width);
         var height = (int)Math.Max(1, Bounds.Height);
