@@ -112,14 +112,10 @@
                                 <Border Width="45" Height="45" Margin="4" Background="#22FFFFFF" CornerRadius="10"
                                         PointerPressed="OnItemPointerPressed"
                                         PointerMoved="OnItemPointerMoved"
+                                        PointerReleased="OnItemPointerReleased"
+                                        ToolTip.Tip="{Binding Title}"
                                         Opacity="{Binding ItemOpacity}">
-                                    <Button Command="{Binding ActivateCommand}"
-                                            ToolTip.Tip="{Binding Title}"
-                                            Background="Transparent"
-                                            BorderBrush="{x:Null}"
-                                            IsEnabled="{Binding IsNotRunning}">
-                                        <Image Source="{Binding Icon}" Width="26" Height="26" />
-                                    </Button>
+                                    <Image Source="{Binding Icon}" Width="26" Height="26" />
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

@@ -1,0 +1,14 @@
+{
+  "manifestVersion": 1,
+  "items": [
+    {
+      "id": "ynet",
+      "title": "ynet",
+      "iconPath": "icon/ynet.png",
+      "platform": "windows",
+      "actions": {
+        "openUrl": { "url": "https://www.ynet.co.il/news/" }
+      }
+    }
+  ]
+}

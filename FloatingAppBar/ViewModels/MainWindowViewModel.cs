@@ -99,7 +99,8 @@ public sealed class MainWindowViewModel : ViewModelBase
                     entry.Path,
                     DeleteItem,
                     item.Actions.Run,
-                    item.Actions.OpenUrl);
+                    item.Actions.OpenUrl,
+                    item.Actions.OpenDashboard);
                 appItem.PropertyChanged += OnItemPropertyChanged;
                 AllItems.Add(appItem);
                 if (!_manifestItems.TryGetValue(entry.Path, out var list))
@@ -157,7 +158,12 @@ public sealed class MainWindowViewModel : ViewModelBase
 
         if (item.OpenUrlAction is { } openUrlAction && !string.IsNullOrWhiteSpace(openUrlAction.Url))
         {
-            return IsUrlOpen(openUrlAction.Url, item.Title);
+            return IsUrlOpen(openUrlAction.Url, item.Title) || DashboardWorkspaceLauncher.IsUrlOpen(openUrlAction.Url);
+        }
+
+        if (item.OpenDashboardAction is { } openDashboardAction)
+        {
+            return DashboardLauncher.IsOpen(openDashboardAction, AppContext.BaseDirectory);
         }
 
         return false;

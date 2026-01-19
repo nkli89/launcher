@@ -1,0 +1,19 @@
+{
+  "manifestVersion": 1,
+  "items": [
+    {
+      "id": "split-dashboard",
+      "title": "Split Dashboard",
+      "iconPath": "icon/GUI.png",
+      "platform": "windows",
+      "showInBar": true,
+      "actions": {
+        "openDashboard": {
+          "configPath": "Dashboards/split_dashboard.json",
+          "alwaysOnTop": true,
+          "fullscreen": true
+        }
+      }
+    }
+  ]
+}

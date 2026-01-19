@@ -11,6 +11,12 @@ public sealed class ActionRunner
     {
         try
         {
+            if (item.Actions.OpenDashboard is { } openDashboard)
+            {
+                DashboardLauncher.Open(openDashboard, baseDirectory);
+                return;
+            }
+
             if (item.Actions.OpenUrl is { } openUrl)
             {
                 OpenUrl(openUrl);
@@ -32,6 +38,12 @@ public sealed class ActionRunner
     {
         try
         {
+            if (action.OpenDashboard is { } openDashboard)
+            {
+                DashboardLauncher.Open(openDashboard, baseDirectory);
+                return;
+            }
+
             if (action.OpenUrl is { } openUrl)
             {
                 OpenUrl(openUrl);

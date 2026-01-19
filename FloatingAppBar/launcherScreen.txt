@@ -1,0 +1,248 @@
+אפיון טכני – Split Screen Web Dashboard (Windows V1)
+1) מטרה
+
+אפליקציית Windows אחת (Shell) שמחלקת את המסך ל־Layouts קבועים ומציגה בכל Pane אתר/דשבורד אחר באמצעות WebView2 — ללא סרגלים/טאבים/כותרות.
+
+2) טכנולוגיות
+
+.NET 8
+
+WPF (מומלץ ל־V1: מהיר לפיתוח, שליטה מלאה ב־Windowing)
+
+Microsoft WebView2 לכל Pane
+
+Logging: Serilog / NLog (מומלץ Serilog + JSON logs)
+
+3) Layouts נתמכים (V1)
+L1: QUAD (4 רבעים)
+
+2x2 panes שווים.
+
+L2: HALF (2 חצאים)
+
+Vertical (שמאל/ימין)
+
+Horizontal (עליון/תחתון)
+
+L3: “2 חצאים + 2 רבעים” (הגדרה חד-משמעית ל־V1)
+
+3 panes:
+
+צד שמאל: חצי מסך (Pane A)
+
+צד ימין: מחולק ל־2 (Pane B עליון, Pane C תחתון)
+
+אם בהמשך אתה רוצה וריאנט עם 4 panes בדיוק—זה V1.1.
+
+4) דרישות פונקציונליות (FR)
+FR-1 חלון ראשי (Shell)
+
+Fullscreen
+
+Borderless (ללא Title Bar)
+
+Always on Top (Toggle)
+
+Start on Windows boot (אופציונלי)
+
+FR-2 Pane מסוג Web
+
+לכל Pane:
+
+URL
+
+Zoom (ברירת מחדל 1.0)
+
+מצב “No UI” מובנה (WebView2)
+
+“מראה חלק”:
+
+אפשרות להסתרת scrollbars (CSS injection אופציונלי)
+
+אפשרות להזרקת CSS/JS לפי פר Pane (למשל להסתיר header פנימי באתר)
+
+FR-3 Overlay ניהול (תפריט נסתר)
+
+Overlay שנפתח רק עם Hotkey:
+
+החלפת Layout
+
+שינוי URL לכל Pane
+
+Reload Pane
+
+Toggle Always-on-top / Fullscreen
+
+Save config
+
+Hotkey מוצע: Ctrl+Shift+O (ניתן להגדרה)
+
+FR-4 אבטחה בסיסית (מומלץ)
+
+חסימת Popups:
+
+NewWindowRequested → Block או redirect לתוך אותו Pane
+
+אופציונלי: whitelist של דומיינים/Hosts לכל Pane
+
+disable context menu (אם רוצים “קיוסק”)
+
+FR-5 יציבות והתאוששות
+
+אם WebView process נכשל (CoreWebView2.ProcessFailed) → reload אוטומטי
+
+Timeout טעינה → retry (אופציונלי)
+
+Logs לכל אירוע קריטי
+
+5) דרישות לא-פונקציונליות (NFR)
+
+עבודה 24/7
+
+מעבר Layout ללא קריסה
+
+שימוש RAM סביר (עדיפות reuse ולא destroy/create WebViews בכל שינוי)
+
+DPI aware (Windows scaling 125% וכו’)
+
+6) ארכיטקטורה (High Level)
+רכיבים
+
+ShellWindow
+
+Borderless fullscreen window
+
+Container (Grid/Canvas) עבור panes
+
+LayoutEngine
+
+קלט: LayoutId + window size + gapPx
+
+פלט: Rect לכל Pane
+
+PaneHost
+
+מחזיק WebView2
+
+APIs: Navigate, Reload, SetZoom, ApplyCss
+
+WebViewFactory
+
+יצירת WebView2 עם Environment משותף
+
+אופציה ל־UserDataFolder פר Pane (אם צריך sessions נפרדים)
+
+OverlayController
+
+UI פנימי (WPF overlay) שנפתח בהוטקי
+
+ConfigService
+
+Load/Save JSON
+
+Validation + defaults
+
+HealthMonitor
+
+מאזין לאירועי כשל, עושה Recovery
+
+7) קונפיגורציה (JSON) + Schema
+קובץ: config.json
+{
+  "app": {
+    "fullscreen": true,
+    "alwaysOnTop": true,
+    "overlayHotkey": "Ctrl+Shift+O",
+    "gapPx": 6
+  },
+  "layout": {
+    "id": "QUAD",
+    "orientation": "Vertical"
+  },
+  "panes": [
+    {
+      "id": "p1",
+      "url": "https://status.example.com",
+      "zoom": 1.0,
+      "navigation": { "mode": "whitelist", "hosts": ["status.example.com"] },
+      "ui": { "disableContextMenu": true, "blockPopups": true },
+      "injection": { "css": "::-webkit-scrollbar{display:none;}" }
+    },
+    { "id": "p2", "url": "https://grafana.example.com", "zoom": 1.0 },
+    { "id": "p3", "url": "http://localhost:8080", "zoom": 1.1 },
+    { "id": "p4", "url": "https://camera.local", "zoom": 1.0 }
+  ]
+}
+
+כללי Validation
+
+layout.id ∈ {QUAD, HALF, MIX_3}
+
+QUAD דורש 4 panes, HALF דורש 2, MIX_3 דורש 3 (אם יש יותר—מתעלמים מהעודפים)
+
+url חייב להיות http/https או file:// מאושר
+
+whitelist hosts אופציונלי, ואם קיים—חוסם ניווט החוצה
+
+8) “מראה חלק” (הגדרה טכנית)
+
+אין address bar/tab bar — כי WebView2 הוא embedded
+
+אין חלוקות/מסגרות מיותרות:
+
+Pane borders = off כברירת מחדל
+
+gapPx קטן לפי config
+
+אם רוצים ממש “קיר” חלק:
+
+enable CSS injection להסתרת scrollbars / כותרות פנימיות באתר
+
+9) Backlog מומלץ (Work Packages)
+WP1 – Shell + WebView2 בסיסי
+
+חלון borderless fullscreen
+
+1 WebView2 טעינת URL
+
+WP2 – LayoutEngine + 3 layouts
+
+QUAD / HALF / MIX_3
+
+resize handling
+
+WP3 – Overlay ניהול
+
+פתיחה בהוטקי
+
+שינוי URL לכל Pane
+
+switch layout
+
+save config
+
+WP4 – Security/Hardening
+
+block popups
+
+whitelist navigation
+
+disable context menu (אופציונלי)
+
+WP5 – Stability
+
+process failed recovery
+
+logs + crash handler
+
+10) קריטריוני קבלה (Acceptance)
+
+מצליח להציג 4 אתרים שונים ברבעים, בלי “סרגל דפדפן”
+
+מעבר מ־QUAD ל־HALF ול־MIX_3 עובד בזמן ריצה
+
+overlay נפתח רק בהוטקי ומאפשר לשנות URL ולשמור
+
+חסימת popups עובדת
+
+אם WebView נופל → נטען מחדש אוטומטית

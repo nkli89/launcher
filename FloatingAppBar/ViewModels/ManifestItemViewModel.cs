@@ -22,7 +22,8 @@ public sealed class AppItemViewModel : ViewModelBase
         string? manifestPath,
         Action<AppItemViewModel>? deleteAction,
         RunAction? runAction,
-        OpenUrlAction? openUrlAction)
+        OpenUrlAction? openUrlAction,
+        OpenDashboardAction? openDashboardAction)
     {
         Title = title;
         Icon = icon;
@@ -32,6 +33,7 @@ public sealed class AppItemViewModel : ViewModelBase
         ManifestPath = manifestPath;
         RunAction = runAction;
         OpenUrlAction = openUrlAction;
+        OpenDashboardAction = openDashboardAction;
         _deleteAction = deleteAction;
         TogglePinnedCommand = new RelayCommand(TogglePinned);
         DeleteCommand = new RelayCommand(Delete);
@@ -52,6 +54,7 @@ public sealed class AppItemViewModel : ViewModelBase
     public string? ManifestPath { get; }
     public RunAction? RunAction { get; }
     public OpenUrlAction? OpenUrlAction { get; }
+    public OpenDashboardAction? OpenDashboardAction { get; }
 
     public bool IsPinned
     {

@@ -1,0 +1,64 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:FloatingAppBar"
+        mc:Ignorable="d"
+        x:Class="FloatingAppBar.LayoutChoiceDialog"
+        x:DataType="vm:LayoutChoiceDialogViewModel"
+        Title="בחירת תצוגה"
+        Width="200"
+        Height="120"
+        WindowStartupLocation="Manual"
+        CanResize="False"
+        ShowInTaskbar="False"
+        SystemDecorations="None"
+        Background="#1E1E1E">
+    <Border Padding="10">
+        <StackPanel Spacing="8">
+            <UniformGrid Columns="3" Rows="1" HorizontalAlignment="Center">
+                <Button Width="44" Height="44"
+                        Background="#2F2F2F"
+                        BorderBrush="#44FFFFFF"
+                        IsEnabled="{Binding CanFull}"
+                        ToolTip.Tip="מסך מלא"
+                        Click="OnFullClick">
+                    <Border Width="20" Height="20" Background="White" CornerRadius="2"/>
+                </Button>
+                <Button Width="44" Height="44"
+                        Background="#2F2F2F"
+                        BorderBrush="#44FFFFFF"
+                        IsEnabled="{Binding CanHalf}"
+                        ToolTip.Tip="חצי מסך"
+                        Click="OnHalfClick">
+                    <Grid Width="22" Height="20">
+                        <Border Background="White" CornerRadius="2" Width="10" HorizontalAlignment="Left"/>
+                        <Border Background="#55FFFFFF" CornerRadius="2" Width="10" HorizontalAlignment="Right"/>
+                    </Grid>
+                </Button>
+                <Button Width="44" Height="44"
+                        Background="#2F2F2F"
+                        BorderBrush="#44FFFFFF"
+                        IsEnabled="{Binding CanQuarter}"
+                        ToolTip.Tip="רבע מסך"
+                        Click="OnQuarterClick">
+                    <Grid Width="22" Height="22">
+                        <UniformGrid Columns="2" Rows="2">
+                            <Border Background="White" Margin="1"/>
+                            <Border Background="White" Margin="1"/>
+                            <Border Background="White" Margin="1"/>
+                            <Border Background="White" Margin="1"/>
+                        </UniformGrid>
+                    </Grid>
+                </Button>
+            </UniformGrid>
+            <Button Content="ביטול"
+                    Width="70"
+                    HorizontalAlignment="Right"
+                    Background="#242424"
+                    BorderBrush="{x:Null}"
+                    Foreground="White"
+                    Click="OnCancelClick"/>
+        </StackPanel>
+    </Border>
+</Window>

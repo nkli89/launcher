@@ -1,0 +1,25 @@
+{
+  "app": {
+    "fullscreen": true,
+    "alwaysOnTop": true,
+    "overlayHotkey": "Ctrl+Shift+O",
+    "gapPx": 6
+  },
+  "layout": {
+    "id": "QUAD",
+    "orientation": "Vertical"
+  },
+  "panes": [
+    {
+      "id": "p1",
+      "url": "https://status.example.com",
+      "zoom": 1.0,
+      "navigation": { "mode": "whitelist", "hosts": ["status.example.com"] },
+      "ui": { "disableContextMenu": true, "blockPopups": true },
+      "injection": { "css": "::-webkit-scrollbar{display:none;}" }
+    },
+    { "id": "p2", "url": "https://grafana.example.com", "zoom": 1.0 },
+    { "id": "p3", "url": "http://localhost:8080", "zoom": 1.1 },
+    { "id": "p4", "url": "https://camera.local", "zoom": 1.0 }
+  ]
+}
