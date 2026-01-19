@@ -23,7 +23,16 @@
                         IsEnabled="{Binding CanFull}"
                         ToolTip.Tip="מסך מלא"
                         Click="OnFullClick">
-                    <Border Width="20" Height="20" Background="White" CornerRadius="2"/>
+                    <Border Width="20" Height="20" CornerRadius="3"
+                            BorderBrush="#55FFFFFF" BorderThickness="0.5"
+                            BoxShadow="0 2 4 #66000000">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Offset="0" Color="#FFFFFFFF"/>
+                                <GradientStop Offset="1" Color="#DDEDEDED"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                    </Border>
                 </Button>
                 <Button Width="44" Height="44"
                         Background="#2F2F2F"
@@ -32,8 +41,26 @@
                         ToolTip.Tip="חצי מסך"
                         Click="OnHalfClick">
                     <Grid Width="22" Height="20">
-                        <Border Background="White" CornerRadius="2" Width="10" HorizontalAlignment="Left"/>
-                        <Border Background="#55FFFFFF" CornerRadius="2" Width="10" HorizontalAlignment="Right"/>
+                        <Border Width="10" CornerRadius="3" HorizontalAlignment="Left"
+                                BorderBrush="#55FFFFFF" BorderThickness="0.5"
+                                BoxShadow="0 2 4 #66000000">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Offset="0" Color="#FFFFFFFF"/>
+                                    <GradientStop Offset="1" Color="#DDEDEDED"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                        <Border Width="10" CornerRadius="3" HorizontalAlignment="Right"
+                                BorderBrush="#33FFFFFF" BorderThickness="0.5"
+                                BoxShadow="0 2 4 #44000000">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Offset="0" Color="#88FFFFFF"/>
+                                    <GradientStop Offset="1" Color="#55CCCCCC"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
                     </Grid>
                 </Button>
                 <Button Width="44" Height="44"
@@ -44,10 +71,46 @@
                         Click="OnQuarterClick">
                     <Grid Width="22" Height="22">
                         <UniformGrid Columns="2" Rows="2">
-                            <Border Background="White" Margin="1"/>
-                            <Border Background="White" Margin="1"/>
-                            <Border Background="White" Margin="1"/>
-                            <Border Background="White" Margin="1"/>
+                            <Border Margin="1" CornerRadius="2"
+                                    BorderBrush="#55FFFFFF" BorderThickness="0.5"
+                                    BoxShadow="0 1 2 #66000000">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Offset="0" Color="#FFFFFFFF"/>
+                                        <GradientStop Offset="1" Color="#DDEDEDED"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                            <Border Margin="1" CornerRadius="2"
+                                    BorderBrush="#55FFFFFF" BorderThickness="0.5"
+                                    BoxShadow="0 1 2 #66000000">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Offset="0" Color="#FFFFFFFF"/>
+                                        <GradientStop Offset="1" Color="#DDEDEDED"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                            <Border Margin="1" CornerRadius="2"
+                                    BorderBrush="#55FFFFFF" BorderThickness="0.5"
+                                    BoxShadow="0 1 2 #66000000">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Offset="0" Color="#FFFFFFFF"/>
+                                        <GradientStop Offset="1" Color="#DDEDEDED"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                            <Border Margin="1" CornerRadius="2"
+                                    BorderBrush="#55FFFFFF" BorderThickness="0.5"
+                                    BoxShadow="0 1 2 #66000000">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Offset="0" Color="#FFFFFFFF"/>
+                                        <GradientStop Offset="1" Color="#DDEDEDED"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
                         </UniformGrid>
                     </Grid>
                 </Button>

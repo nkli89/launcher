@@ -172,19 +172,23 @@
                     </UniformGrid>
                 </Border>
 
-                <Border Background="#33FFFFFF" CornerRadius="15" Width="60" Height="60" Margin="5" ClipToBounds="True">
-                    <Grid>
-                        <Image Source="avares://FloatingAppBar/hir.png" Stretch="UniformToFill" />
-                        <TextBlock Text="מערכות" Foreground="White" FontSize="8" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,5"/>
-                    </Grid>
-                </Border>
-
-                <Button Content="אפליקציות" Margin="8,0,0,0"
+                <Button Margin="5"
                         Background="Transparent" BorderBrush="{x:Null}"
-                        Foreground="White" Click="OnAllAppsClick"/>
-                <Button Content="מזער" Margin="8,0,0,0"
+                        ToolTip.Tip="כל האפליקציות"
+                        Click="OnAllAppsClick">
+                    <Border Background="#33FFFFFF" CornerRadius="15" Width="60" Height="60" ClipToBounds="True">
+                        <Grid>
+                            <Image Source="avares://FloatingAppBar/hir.png" Stretch="UniformToFill" />
+                            <TextBlock Text="ניהול" Foreground="White" FontSize="8" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                        </Grid>
+                    </Border>
+                </Button>
+                <Button Margin="8,0,0,0"
                         Background="Transparent" BorderBrush="{x:Null}"
-                        Foreground="White" Command="{Binding MinimizeCommand}"/>
+                        Foreground="White" ToolTip.Tip="צמצום סרגל"
+                        Command="{Binding MinimizeCommand}">
+                    <TextBlock Text="⤵" FontSize="14"/>
+                </Button>
                 <Button Content="X" Width="28" Height="28" Margin="8,0,0,0"
                         Background="Transparent" BorderBrush="{x:Null}"
                         Foreground="White" Click="OnCloseClick"/>

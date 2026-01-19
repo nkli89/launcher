@@ -331,6 +331,12 @@ public partial class MainWindow : Window
 
     private void OnCloseClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        if (_allAppsWindow is not null)
+        {
+            _allAppsWindow.Close();
+            _allAppsWindow = null;
+        }
+
         Close();
     }
 
@@ -380,12 +386,14 @@ public partial class MainWindow : Window
             return;
         }
 
+        var anchor = sender as Control;
         if (_allAppsWindow is null)
         {
             _allAppsWindow = new AllAppsWindow(new AllAppsViewModel(viewModel, viewModel.AllItems));
             _allAppsWindow.Closed += (_, _) => _allAppsWindow = null;
         }
 
+        _allAppsWindow.AttachAnchor(anchor, this);
         _allAppsWindow.Show();
         _allAppsWindow.Activate();
     }
