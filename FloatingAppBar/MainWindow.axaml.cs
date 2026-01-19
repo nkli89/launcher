@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
+using System.Management;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -12,6 +14,10 @@ namespace FloatingAppBar;
 
 public partial class MainWindow : Window
 {
+    private const int SnapThreshold = 20;
+    private const int BrightnessMin = 0;
+    private const int BrightnessMax = 100;
+
     private AppItemViewModel? _dragItem;
     private bool _dragInProgress;
     private bool _dragReady;
@@ -19,12 +25,19 @@ public partial class MainWindow : Window
     private PointerEventArgs? _lastPointerEvent;
     private Point _dragStartPoint;
     private AllAppsWindow? _allAppsWindow;
+    private Slider? _brightnessSlider;
+    private TextBlock? _brightnessValueText;
+    private TextBlock? _brightnessStatusText;
+    private DispatcherTimer? _brightnessTimer;
+    private byte? _pendingBrightness;
+    private bool _brightnessSupported;
 
     public MainWindow()
     {
         InitializeComponent();
         DataContext = new MainWindowViewModel();
         Topmost = true;
+        InitializeBrightnessControls();
     }
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -343,6 +356,11 @@ public partial class MainWindow : Window
         }
     }
 
+    private void OnWindowPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        SnapToEdges();
+    }
+
     private static void SetPressedState(Control control, bool isPressed)
     {
         if (isPressed)
@@ -370,5 +388,178 @@ public partial class MainWindow : Window
 
         _allAppsWindow.Show();
         _allAppsWindow.Activate();
+    }
+
+    private void InitializeBrightnessControls()
+    {
+        _brightnessSlider = this.FindControl<Slider>("BrightnessSlider");
+        _brightnessValueText = this.FindControl<TextBlock>("BrightnessValueText");
+        _brightnessStatusText = this.FindControl<TextBlock>("BrightnessStatusText");
+
+        if (_brightnessSlider is null)
+        {
+            return;
+        }
+
+        var current = TryGetBrightness();
+        if (current.HasValue)
+        {
+            _brightnessSupported = true;
+            _brightnessSlider.Value = current.Value;
+            UpdateBrightnessText(current.Value);
+            UpdateBrightnessStatus(string.Empty);
+        }
+        else
+        {
+            _brightnessSupported = false;
+            _brightnessSlider.IsEnabled = false;
+            UpdateBrightnessText(null);
+            UpdateBrightnessStatus("בהירות לא נתמכת במסך זה");
+        }
+    }
+
+    private void OnBrightnessChanged(object? sender, RangeBaseValueChangedEventArgs e)
+    {
+        if (!_brightnessSupported)
+        {
+            return;
+        }
+
+        var value = (byte)Math.Clamp((int)Math.Round(e.NewValue), BrightnessMin, BrightnessMax);
+        UpdateBrightnessText(value);
+        QueueBrightnessSet(value);
+    }
+
+    private void QueueBrightnessSet(byte value)
+    {
+        _pendingBrightness = value;
+        if (_brightnessTimer is null)
+        {
+            _brightnessTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(120)
+            };
+            _brightnessTimer.Tick += OnBrightnessTimerTick;
+        }
+
+        _brightnessTimer.Stop();
+        _brightnessTimer.Start();
+    }
+
+    private void OnBrightnessTimerTick(object? sender, EventArgs e)
+    {
+        _brightnessTimer?.Stop();
+        if (_pendingBrightness is null)
+        {
+            return;
+        }
+
+        var success = TrySetBrightness(_pendingBrightness.Value);
+        UpdateBrightnessStatus(success ? string.Empty : "שינוי בהירות נכשל");
+    }
+
+    private void UpdateBrightnessText(int? brightness)
+    {
+        if (_brightnessValueText is null)
+        {
+            return;
+        }
+
+        _brightnessValueText.Text = brightness.HasValue ? $"{brightness.Value}%" : "--%";
+    }
+
+    private void UpdateBrightnessStatus(string message)
+    {
+        if (_brightnessStatusText is null)
+        {
+            return;
+        }
+
+        _brightnessStatusText.Text = message;
+        _brightnessStatusText.IsVisible = !string.IsNullOrWhiteSpace(message);
+    }
+
+    private static byte? TryGetBrightness()
+    {
+        try
+        {
+            using var searcher = new ManagementObjectSearcher(
+                "root\\wmi",
+                "SELECT CurrentBrightness FROM WmiMonitorBrightness");
+            foreach (ManagementObject obj in searcher.Get())
+            {
+                if (obj["CurrentBrightness"] is byte current)
+                {
+                    return current;
+                }
+            }
+        }
+        catch
+        {
+            // Ignore unsupported hardware or permission issues.
+        }
+
+        return null;
+    }
+
+    private static bool TrySetBrightness(byte brightness)
+    {
+        try
+        {
+            using var methods = new ManagementClass("root\\wmi", "WmiMonitorBrightnessMethods", null);
+            foreach (ManagementObject instance in methods.GetInstances())
+            {
+                instance.InvokeMethod("WmiSetBrightness", new object[] { 0, brightness });
+                return true;
+            }
+        }
+        catch
+        {
+            // Ignore unsupported hardware or permission issues.
+        }
+
+        return false;
+    }
+
+    private void SnapToEdges()
+    {
+        var current = Position;
+        var screen = Screens.ScreenFromPoint(current) ?? Screens.Primary;
+        if (screen is null)
+        {
+            return;
+        }
+
+        var working = screen.WorkingArea;
+        var width = (int)Math.Max(1, Bounds.Width);
+        var height = (int)Math.Max(1, Bounds.Height);
+
+        var snapX = current.X;
+        var snapY = current.Y;
+
+        if (Math.Abs(current.X - working.X) <= SnapThreshold)
+        {
+            snapX = working.X;
+        }
+        else if (Math.Abs((current.X + width) - working.Right) <= SnapThreshold)
+        {
+            snapX = working.Right - width;
+        }
+
+        if (Math.Abs(current.Y - working.Y) <= SnapThreshold)
+        {
+            snapY = working.Y;
+        }
+        else if (Math.Abs((current.Y + height) - working.Bottom) <= SnapThreshold)
+        {
+            snapY = working.Bottom - height;
+        }
+
+        if (snapX == current.X && snapY == current.Y)
+        {
+            return;
+        }
+
+        Position = new PixelPoint(snapX, snapY);
     }
 }

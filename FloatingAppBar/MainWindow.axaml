@@ -36,6 +36,7 @@
     <Grid VerticalAlignment="Bottom" Margin="0,0,0,8">
         <Border CornerRadius="25" Background="#CC1A1A1A" BorderBrush="#33FFFFFF" BorderThickness="1.5"
                 BoxShadow="0 5 15 #80000000" PointerPressed="OnPointerPressed"
+                PointerReleased="OnWindowPointerReleased"
                 IsVisible="{Binding IsNotMinimized}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="6,4">
                 <Border Background="#22FFFFFF" CornerRadius="15" Padding="10,5" Margin="5">
@@ -106,6 +107,21 @@
                             </Button>
                             <Button Width="34" Height="34" Background="#22111111" BorderBrush="{x:Null}" CornerRadius="10"
                                     ToolTip.Tip="הגדרות">
+                                <Button.Flyout>
+                                    <Flyout Placement="Bottom">
+                                        <Border Background="#EE2A2A2A" Padding="10" CornerRadius="8" MinWidth="220">
+                                            <StackPanel Spacing="6">
+                                                <TextBlock Text="בהירות מסך" Foreground="White" FontSize="12" FontWeight="SemiBold"/>
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                                                    <Slider Name="BrightnessSlider" Width="140" Minimum="0" Maximum="100"
+                                                            ValueChanged="OnBrightnessChanged"/>
+                                                    <TextBlock Name="BrightnessValueText" Text="--%" Foreground="#DDFFFFFF"/>
+                                                </StackPanel>
+                                                <TextBlock Name="BrightnessStatusText" Text="" Foreground="#FFAAAAAA" FontSize="10"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Flyout>
+                                </Button.Flyout>
                                 <Image Width="22" Height="22">
                                     <Image.Source>
                                         <svg:SvgImage Source="avares://FloatingAppBar/Assets/icons/settings_color.svg" />
@@ -180,7 +196,8 @@
                 Margin="12,0,0,12"
                 ClipToBounds="True"
                 IsVisible="{Binding IsMinimized}"
-                PointerPressed="OnCompactPointerPressed">
+                PointerPressed="OnCompactPointerPressed"
+                PointerReleased="OnWindowPointerReleased">
             <Grid>
                 <Image Source="avares://FloatingAppBar/hir.png" Stretch="UniformToFill" />
             </Grid>
