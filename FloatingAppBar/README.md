@@ -140,3 +140,20 @@ dotnet run
 ## Notes
 - App bar docks to the left of the primary screen on startup.
 - SVG/PNG/ICO icons are supported.
+
+## Settings
+Edit `settings.json` in the app folder.
+
+### Example: Wi-Fi adapter
+```json
+{
+  "barShape": "rounded",
+  "cornerRadius": 10,
+  "networkAdapter": "Wi-Fi"
+}
+```
+
+### Example: IPv4 display (auto)
+IPv4 is not configured in settings; it is detected from the adapter.
+Example tooltip text:
+`Network: Wi-Fi 192.168.1.25`

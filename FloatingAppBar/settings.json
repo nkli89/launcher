@@ -1,4 +1,12 @@
 {
   "barShape": "rounded",
-  "cornerRadius": 10
+  "cornerRadius": 10,
+  "_helpNetworkAdapter": "Single adapter to monitor. Use adapter Name/Id/Description. Leave empty to use Wi-Fi/LAN fields below.",
+  "networkAdapter": "Ethernet",
+  "_helpNetworkAdapterWifi": "Wi-Fi adapter Name/Id/Description (used if networkAdapter empty).",
+  "networkAdapterWifi": "",
+  "_helpNetworkAdapterLan": "LAN/Ethernet adapter Name/Id/Description (used if networkAdapter + Wi-Fi empty).",
+  "networkAdapterLan": "Ethernet",
+  "_exampleWifi": "Wi-Fi",
+  "_exampleLan": "Ethernet"
 }

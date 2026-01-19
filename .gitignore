@@ -1,0 +1,16 @@
+bin/
+obj/
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.cache
+*.pdb
+*.dll
+*.exe
+*.runtimeconfig.json
+*.deps.json
+*.nuget.g.*
+*.DS_Store
+Thumbs.db
